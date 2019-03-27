@@ -1,15 +1,25 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import getopt
-import logging
 import sys
 
 
 from args import ProcessArgs
 
-assert sys.version_info >= (3, 6, 0), 'btm-net-analysis requires Python 3.6+'  # check Python version
+assert sys.version_info >= (3, 6, 0), 'btm-net-analysis requires Python 3.6+'  # 检查Python版本
 
 
 if __name__ == '__main__':
-    input_args = ProcessArgs(sys.argv[1:])  # 处理命令行参数
+    args_info = ProcessArgs(sys.argv[1:])  # 处理命令行参数
+    work_mode = args_info.current_mode
+
+    if work_mode == 1:
+        pass
+    elif work_mode == 2:
+        pass
+    elif work_mode == 3:
+        pass
+    elif work_mode == 4:
+        pass
+    else:
+        ProcessArgs.__exit(-1)

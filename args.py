@@ -7,11 +7,23 @@ import sys
 
 
 class ProcessArgs:
+    """
+    处理命令行参数
+    """
     def __init__(self, argv):
+        """初始化命令行参数、类属性并解析命令行参数"""
         self.__argv = argv # 设置命令行设置
+        self.current_mode = 0 # 模式1:分析单个区块信息 模式2:分析所有区块 模式3:分析单笔交易 模式4:分析所有交易
+        self.tx_hash = None # 交易Hash
+        self.height = None # 区块高度
         self.__parse_args()  # 解析参数
     
     def __parse_args(self):
+        """解析命令行参数并设置工作模式、交易Hash或区块高度"""
+        # 如果不存在命令行参数打印帮助后退出
+        if not self.__argv:
+            self.__exit(0)
+        # 解析命令行参数
         try:
             opts, args = getopt.getopt(self.__argv, 'hb:t:', ['help', 'block=', 'transaction='])
         except getopt.GetoptError as err:
@@ -21,9 +33,26 @@ class ProcessArgs:
             if opt in ('-h', '--help'):
                 self.__exit(0)
             elif opt in ('-b', '--block'):
-                print('block')
+                # 判读参数是否为all
+                if arg == 'all':
+                    self.current_mode = 2
+                # 判断传入的区块高度的字符串是否是数字内容
+                elif arg.isdigit():
+                    self.current_mode = 1
+                    self.height = int(arg)
+                else:
+                    print('Please confirm the parameter is block height')
+                    self.__exit(-1)
             elif opt in ('-t', '--transaction'):
-                print('transaction')
+                if arg == 'all':
+                    self.current_mode = 4
+                # 判读传入的交易id是否为长度64的tx_hash
+                elif len(arg) == 64:
+                    self.current_mode = 3
+                    self.tx_hash = arg
+                else:
+                    print('Please confirm the parameter is transaction hash')
+                    self.__exit(-1)
             else:
                 logging.error('unhandled option')
                 self.__exit(-1)
@@ -31,6 +60,7 @@ class ProcessArgs:
 
     @staticmethod
     def __exit(exit_code):
+        """打印使用帮助并使用传入的错误码退出程序"""
         print("\nUsage: main.py "
             "[-h/--help] "
             "[-b/--block <block_height>/all] "
@@ -38,4 +68,5 @@ class ProcessArgs:
         sys.exit(exit_code)
 
     def __print_args(self):
+        """打印参数信息"""
         pass
