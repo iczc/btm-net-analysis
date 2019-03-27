@@ -14,8 +14,8 @@ class ProcessArgs:
         """初始化命令行参数、类属性并解析命令行参数"""
         self.__argv = argv # 设置命令行设置
         self.current_mode = 0 # 模式1:分析单个区块信息 模式2:分析所有区块 模式3:分析单笔交易 模式4:分析所有交易
-        self.tx_hash = None # 交易Hash
         self.height = None # 区块高度
+        self.tx_hash = None # 交易Hash
         self.__parse_args()  # 解析参数
     
     def __parse_args(self):
@@ -69,4 +69,9 @@ class ProcessArgs:
 
     def __print_args(self):
         """打印参数信息"""
-        pass
+        mode_info = ['', 'Analyze a block', 'Analyze all blocks', 'Analyze a transaction', 'Analyze all transactions']
+        print('current mode is %s' %(mode_info[self.current_mode]))
+        if self.current_mode == 1:
+            print('block height is %s' %str(self.height))
+        elif self.current_mode == 3:
+            print('transaction id is %s' %self.tx_hash)
