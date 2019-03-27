@@ -26,3 +26,14 @@ Options:
 | -b all | --block all | 查看所有区块完全广播的最短时间，最长时间，平均值，中位数 |
 | -t \<tx_hash\> | --transaction \<tx_hash\> | 查看此交易最早收到的节点的时间，最晚收到的节点的时间，交易从出现到完全广播话费的时间 |
 | -t all | --transaction all | 查看所有交易完全广播的最短时间，最长时间，平均值，中位数 |
+
+
+## 日志参数说明
+
+* time: Mar 17 00:00:00.486
+* level: info
+* msg: receive message from peer
+* message: height / tx_size tx_hash
+* module: netsync
+* peer: 115.54.192.9:52618
+* type: *netsync.GetBlockMessage / *netsync.TransactionMessage / *netsync.StatusRequestMessage
