@@ -23,6 +23,10 @@ class ProcessArgs:
         # 如果不存在命令行参数打印帮助后退出
         if not self.__argv:
             self.__exit(0)
+        # 如果使用了的命令行参数超过一个打印帮助后退出
+        if len(self.__argv) > 2:
+            print('Only one of -b/--block and -t/--transaction can be used!')
+            self.__exit(-1)
         # 解析命令行参数
         try:
             opts, args = getopt.getopt(self.__argv, 'hb:t:', ['help', 'block=', 'transaction='])
@@ -41,7 +45,7 @@ class ProcessArgs:
                     self.current_mode = 1
                     self.height = int(arg)
                 else:
-                    print('Please confirm the parameter is block height')
+                    print('Please confirm the parameter is block height!')
                     self.__exit(-1)
             elif opt in ('-t', '--transaction'):
                 if arg == 'all':
@@ -51,7 +55,7 @@ class ProcessArgs:
                     self.current_mode = 3
                     self.tx_hash = arg
                 else:
-                    print('Please confirm the parameter is transaction hash')
+                    print('Please confirm the parameter is transaction hash!')
                     self.__exit(-1)
             else:
                 logging.error('unhandled option')
