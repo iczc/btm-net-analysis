@@ -30,10 +30,9 @@ Options:
 
 ## 日志参数说明
 
-* time: Mar 17 00:00:00.486
-* level: info
+* time: Mar 17 00:00:00.486 (月 日 时:分:秒.毫秒)
+* level: info（日志等级）
 * msg: receive message from peer
-* message: height / tx_size tx_hash
-* module: netsync
-* peer: 115.54.192.9:52618
-* type: *netsync.GetBlockMessage / *netsync.TransactionMessage / *netsync.StatusRequestMessage
+* message: tx_size tx_hash （交易大小和交易id）/ height hash（区块高度和区块Hash）/ 
+* peer: 115.54.192.9:52618 （节点ip和端口）
+* type:  *netsync.TransactionMessage （交易日志） / *netsync.MineBlockMessage （区块日志）
