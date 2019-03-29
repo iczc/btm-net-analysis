@@ -6,7 +6,7 @@ import logging
 import sys
 
 
-class ProcessArgs:
+class ArgsProcessing:
     """
     处理命令行参数
     """
