@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import logging
 import re
+import sys
 
 
 class LogProcessing:
@@ -14,9 +16,14 @@ class LogProcessing:
         self.__execution_clean_log() # 执行日志清洗
     
     def __execution_clean_log(self):
-        with open(self.__log_path, 'r') as f:
-            # 将日志文件以行为单位拆分并放入list
-            log_list = f.readlines()
+        try:
+            with open(self.__log_path, 'r') as f:
+                # 将日志文件以行为单位拆分并放入列表
+                log_list = f.readlines()
+        except IOError as err:
+            logging.error('%s', str(err))
+            print('Log file "%s" is not accessible!' %self.__log_path)
+            sys.exit(-1)
         for i in range(0, len(log_list)):
             # 使用正则表达式匹配双引号中的内容并存为列表
             # 格式为:['Mar 17 00:00:00.486', 'receive message from peer', '{height: 197197}', '115.54.192.9:52618', '*netsync.GetBlockMessage']
