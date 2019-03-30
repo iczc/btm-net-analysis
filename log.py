@@ -51,9 +51,9 @@ class LogProcessing:
         # 从all_tx_hash元组中创建字典 key为交易id 同时去处重复元素
         self.transaction_dict = dict().fromkeys(all_tx_hash, [])
         for i in range(0, len(self.transaction_log_list)):
-            # 设置区块字典的key为交易id
+            # 设置交易字典的key为交易id
             transaction_dict_key = self.transaction_log_list[i][1]
-            # 设置交易字典的key为['时间', '节点ip:端口']
+            # 设置交易字典的value为['时间', '节点ip:端口']
             transaction_dict_value = [self.transaction_log_list[i][0], self.transaction_log_list[i][2]]
             # 构建字典
             self.transaction_dict[transaction_dict_key].append(transaction_dict_value)
