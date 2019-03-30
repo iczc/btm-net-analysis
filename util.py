@@ -16,7 +16,7 @@ def logtime_to_millisecondtimestamp(log_time):
     """
     year_str = str(datetime.datetime.now().year)
     # 将年份与日志中的时间拼接
-    time_str = year_str + ' ' + log_time
+    time_str = '%s %s' %(year_str, log_time)
     # 将时间字符串转为格式化的时间
     d = datetime.datetime.strptime(time_str, "%Y %b %d %H:%M:%S.%f")
     # 记录3位的毫秒时间
@@ -33,5 +33,6 @@ def calc_time_interval(earliest_time, latest_time):
     millisecond_interval = abs(latest_time - earliest_time)
     second_interval = int(millisecond_interval / 1000)
     millisecond = str(millisecond_interval)[-3:]
-    time_interval = str(datetime.timedelta(seconds=second_interval)) + '.' + millisecond
+    # time_interval = str(datetime.timedelta(seconds=second_interval)) + '.' + millisecond
+    time_interval = '%s.%s' %(datetime.timedelta(seconds=second_interval), millisecond)
     return time_interval
