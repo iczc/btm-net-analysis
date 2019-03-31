@@ -98,6 +98,6 @@ class ArgsProcessing:
         mode_info = ['', 'Analyze a transaction', 'Analyze all transactions', 'Analyze a block', 'Analyze all blocks']
         print('current mode: %s' %(mode_info[self.current_mode]))
         if self.current_mode == 1:
-            print('transaction id: %s' %self.tx_hash)
+            print('transaction id: %s\n' %self.tx_hash)
         elif self.current_mode == 3:
-            print('block height: %s' %self.height)
+            print('block height: %s\n' %self.height)
