@@ -10,8 +10,22 @@ import time
 from datetime import datetime
 
 
-class LogProcessing:
+class LogProcessing(object):
+    """日志处理类
+
+    将单个日志文件中的交易日志和区块日志存为[时间, 交易id/区块高度, 节点ip:端口]
+    构成的嵌套列表，并可通过generate_transaction_dictionary或
+    generate_block_dictionary类方法生成交易id或区块高度为key，
+    存在嵌套列表中的时间和节点ip:端口为value的字典以方便分析数据。
+
+    Attributes:
+        all_tx_hash: 记录所有的交易id.
+        all_block_height: 记录所有的区块高度.
+        transaction_dict: 字典格式的交易日志.
+        block_dict: 字典格式的交易日志.
+    """
     def __init__(self, log_path):
+        """初始化类属性并执行日志清洗"""
         self.__log_path = log_path # 日志文件路径
         self.__transaction_log_list = [] # 清洗后的交易日志列表 [['时间', '交易id', '节点ip:端口']]
         self.__block_log_list = [] # 清洗后的交易日志列表 [['时间', '区块高度', '节点ip:端口']]
@@ -22,6 +36,7 @@ class LogProcessing:
         self.__execution_clean_log() # 执行日志清洗
     
     def __execution_clean_log(self):
+        """执行日志清洗 将日志中的有用数据存为列表"""
         try:
             with open(self.__log_path, 'r') as f:
                 # 将日志文件以行为单位拆分并放入列表
@@ -52,6 +67,7 @@ class LogProcessing:
                 self.__block_log_list.append(divided_log)
 
     def generate_transaction_dictionary(self):
+        """生产字典格式的交易数据"""
         # 取transaction_log_list中的第二列即交易id 包含重复元素
         self.all_tx_hash = list(zip(*self.__transaction_log_list))[1]
         # 从all_tx_hash元组中创建字典 key为交易id 同时去处重复元素
@@ -66,6 +82,7 @@ class LogProcessing:
             self.transaction_dict[transaction_dict_key].append(transaction_dict_value)
 
     def generate_block_dictionary(self):
+        """生产字典格式的区块数据"""
         self.all_block_height = list(zip(*self.__block_log_list))[1]
         self.block_dict = dict().fromkeys(self.all_block_height, [])
         self.all_block_height = self.block_dict.keys()

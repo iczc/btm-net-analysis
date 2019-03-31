@@ -7,21 +7,30 @@ import os
 import sys
 
 
-class ArgsProcessing:
+class ArgsProcessing(object):
     """
     处理命令行参数
+
+    根据用户输入的命令行参数设置类属性中的工作模式、日志文件
+    列表、区块高度或交易Hash并捕获用户输入的命令行参数的的错误
+
+    Attributes:
+        current_mode: 用户设置的工作模式.
+        log_file_lis: 日志文件路径的列表.
+        height: 用户通过命令行参数传入的区块高度.
+        tx_hash: 用户通过命令行参数传入的交易Hash.
     """
     def __init__(self, argv):
         """初始化命令行参数、类属性并解析命令行参数"""
         self.__argv = argv # 设置命令行设置
         self.current_mode = 0 # 模式1:分析单笔交易 模式2:分析所有交易 模式3:分析单个区块 模式4:分析所有区块
-        self.log_file_list = []
+        self.log_file_list = [] # 日志文件列表
         self.height = None # 区块高度
         self.tx_hash = None # 交易Hash
         self.__parse_args()  # 解析参数
     
     def __parse_args(self):
-        """解析命令行参数并设置工作模式、交易Hash或区块高度"""
+        """解析命令行参数并设置工作模式、日志文件列表、交易Hash或区块高度"""
         # 如果不存在命令行参数打印帮助后退出
         if not self.__argv:
             self.__exit(0)
