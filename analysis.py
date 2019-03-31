@@ -1,20 +1,36 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from datetime import timedelta
+import threading
+
+from queue import Queue
 
 from log import LogProcessing
 
 
-class Analysis:
-    def __init__(self, log_file):
-        self.__log_info = LogProcessing(log_file)
+class Analysis(threading.Thread):
+    def __init__(self, log_file, parameter, type):
+        super(Analysis, self).__init__()
+        self.__log_file = log_file
+        self.__parameter = parameter
+        self.__type = type
         self.earliest_msg = ''
         self.latest_msg = ''
+        self.__log_info = LogProcessing(self.__log_file)
     
-    def find_earliest_latest_msg(self, parameter, type):
-        if type == 'transaction':
-            tx_hash = parameter
+    def run(self):
+        self.find_earliest_latest_msg()
+        # 判断所有的最早的消息列表和最晚的消息列表不为空
+        if self.earliest_msg and self.latest_msg:
+            print('The earliest msg and latest msg in %s:' %self.__log_file)
+            print(self.earliest_msg)
+            print(self.latest_msg)
+    
+    def find_earliest_latest_msg(self):
+        """查找区块或交易中的最早和最晚的消息，根据type
+        参数的不同，parameter分别为交易id或区块高度"""
+        if self.__type == 'transaction':
+            tx_hash = self.__parameter
             self.__log_info.generate_transaction_dictionary()
             # 判断transaction字典中是否有交易id的key
             if tx_hash in self.__log_info.transaction_dict:
@@ -23,9 +39,10 @@ class Analysis:
                 transaction_info_list.sort(key=lambda msg: self.__log_info.logtime_to_millisecondtimestamp(msg[0]))
                 self.earliest_msg = transaction_info_list[0]
                 self.latest_msg = transaction_info_list[-1]
-                return True
-        elif type == 'block':
-            height = parameter
+            else:
+                print('The transaction %s was not found in %s' %(tx_hash, self.__log_file))
+        elif self.__type == 'block':
+            height = self.__parameter
             self.__log_info.generate_block_dictionary()
             # block字典中是否有区块高度的key
             if height in self.__log_info.block_dict:
@@ -34,16 +51,5 @@ class Analysis:
                 blcok_info_list.sort(key=lambda msg: self.__log_info.logtime_to_millisecondtimestamp(msg[0]))
                 self.earliest_msg = blcok_info_list[0]
                 self.latest_msg = blcok_info_list[-1]
-                return True
-        # 如果type错误或者未找到区块高度或交易id返回false
-        return False
-
-    @staticmethod
-    def calc_time_interval(earliest_time, latest_time):
-        latest_time = LogProcessing.logtime_to_millisecondtimestamp(latest_time)
-        earliest_time = LogProcessing.logtime_to_millisecondtimestamp(earliest_time)
-        millisecond_interval = abs(latest_time - earliest_time)
-        second_interval = int(millisecond_interval / 1000)
-        millisecond = str(millisecond_interval)[-3:]
-        time_interval = '%s.%s' %(timedelta(seconds=second_interval), millisecond)
-        return time_interval
+            else:
+                print('The height %s was not found in %s' %(height, self.__log_file))

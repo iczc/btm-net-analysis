@@ -29,8 +29,8 @@ class LogProcessing(object):
         self.__log_path = log_path # 日志文件路径
         self.__transaction_log_list = [] # 清洗后的交易日志列表 [['时间', '交易id', '节点ip:端口']]
         self.__block_log_list = [] # 清洗后的交易日志列表 [['时间', '区块高度', '节点ip:端口']]
-        self.all_tx_hash = [] # 所有的交易id
-        self.all_block_height = [] # 所有的区块高度
+        self.tx_hash = [] # 所有的交易id
+        self.block_height = [] # 所有的区块高度
         self.transaction_dict = None # 字典格式的交易信息 {'交易id': [['时间','节点ip:端口']]}
         self.block_dict = None # 字典格式的区块信息 {'区块高度': [['时间','节点ip:端口']]}
         self.__execution_clean_log() # 执行日志清洗
@@ -66,13 +66,23 @@ class LogProcessing(object):
                 del(divided_log[1])
                 self.__block_log_list.append(divided_log)
 
+    def retrieve_all_txhash(self):
+        """获取日志中所有交易id"""
+        # 取transaction_log_list中的第二列即交易id 包含重复元素
+        self.tx_hash = list(zip(*self.__transaction_log_list))[1]
+        # 从all_tx_hash元组中创建字典 key为交易id 同时去处重复元素
+        self.transaction_dict = dict().fromkeys(self.tx_hash, [])
+        self.tx_hash = list(self.transaction_dict.keys())
+
+    def retrieve_all_height(self):
+        """获取所有区块高度"""
+        self.block_height = list(zip(*self.__block_log_list))[1]
+        self.block_dict = dict().fromkeys(self.block_height, [])
+        self.block_height = list(self.block_dict.keys())
+
     def generate_transaction_dictionary(self):
         """生产字典格式的交易数据"""
-        # 取transaction_log_list中的第二列即交易id 包含重复元素
-        self.all_tx_hash = list(zip(*self.__transaction_log_list))[1]
-        # 从all_tx_hash元组中创建字典 key为交易id 同时去处重复元素
-        self.transaction_dict = dict().fromkeys(self.all_tx_hash, [])
-        self.all_tx_hash = self.transaction_dict.keys()
+        self.retrieve_all_txhash()
         for i in range(0, len(self.__transaction_log_list)):
             # 设置交易字典的key为交易id
             transaction_dict_key = self.__transaction_log_list[i][1]
@@ -83,9 +93,7 @@ class LogProcessing(object):
 
     def generate_block_dictionary(self):
         """生产字典格式的区块数据"""
-        self.all_block_height = list(zip(*self.__block_log_list))[1]
-        self.block_dict = dict().fromkeys(self.all_block_height, [])
-        self.all_block_height = self.block_dict.keys()
+        self.retrieve_all_height()
         for i in range(0, len(self.__block_log_list)):
             # 设置区块字典的key为区块高度
             block_dict_key = self.__block_log_list[i][1]
