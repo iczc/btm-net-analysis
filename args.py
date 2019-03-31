@@ -16,7 +16,7 @@ class ArgsProcessing(object):
 
     Attributes:
         current_mode: 用户设置的工作模式.
-        log_file_lis: 日志文件路径的列表.
+        log_file_list: 日志文件路径的列表.
         height: 用户通过命令行参数传入的区块高度.
         tx_hash: 用户通过命令行参数传入的交易Hash.
     """
