@@ -19,8 +19,6 @@ class LogProcessing(object):
     存在嵌套列表中的时间和节点ip:端口为value的字典以方便分析数据。
 
     Attributes:
-        all_tx_hash: 记录所有的交易id.
-        all_block_height: 记录所有的区块高度.
         transaction_dict: 字典格式的交易日志.
         block_dict: 字典格式的交易日志.
     """
@@ -29,10 +27,8 @@ class LogProcessing(object):
         self.__log_path = log_path # 日志文件路径
         self.__transaction_log_list = [] # 清洗后的交易日志列表 [['时间', '交易id', '节点ip:端口']]
         self.__block_log_list = [] # 清洗后的交易日志列表 [['时间', '区块高度', '节点ip:端口']]
-        self.tx_hash = [] # 所有的交易id
-        self.block_height = [] # 所有的区块高度
-        self.transaction_dict = None # 字典格式的交易信息 {'交易id': [['时间','节点ip:端口']]}
-        self.block_dict = None # 字典格式的区块信息 {'区块高度': [['时间','节点ip:端口']]}
+        self.transaction_dict = dict() # 字典格式的交易信息 {'交易id': [['时间','节点ip:端口']]}
+        self.block_dict = dict() # 字典格式的区块信息 {'区块高度': [['时间','节点ip:端口']]}
         self.__execution_clean_log() # 执行日志清洗
     
     def __execution_clean_log(self):
@@ -64,41 +60,26 @@ class LogProcessing(object):
             print('Log file "%s" is not accessible!' %self.__log_path)
             sys.exit(-1)
 
-    def retrieve_all_txhash(self):
-        """获取日志中所有交易id"""
-        # 取transaction_log_list中的第二列即交易id 包含重复元素
-        self.tx_hash = [i[1] for i in self.__transaction_log_list] 
-        # self.tx_hash = list(zip(*self.__transaction_log_list))[1]
-        # print(self.tx_hash)
-        # 从all_tx_hash元组中创建字典 key为交易id 同时去处重复元素
-        self.transaction_dict = dict().fromkeys(self.tx_hash, [])
-        self.tx_hash = list(self.transaction_dict.keys())
-
-    def retrieve_all_height(self):
-        """获取所有区块高度"""
-        self.block_height =  [i[1] for i in self.__block_log_list] 
-        # self.block_height = list(zip(*self.__block_log_list))[1]
-        self.block_dict = dict().fromkeys(self.block_height, [])
-        self.block_height = list(self.block_dict.keys())
-
     def generate_transaction_dictionary(self):
         """生产字典格式的交易数据"""
-        self.retrieve_all_txhash()
         for i in range(0, len(self.__transaction_log_list)):
             # 设置交易字典的key为交易id
             transaction_dict_key = self.__transaction_log_list[i][1]
             # 设置交易字典的value为['时间', '节点ip:端口']
             transaction_dict_value = [self.__transaction_log_list[i][0], self.__transaction_log_list[i][2]]
             # 构建字典
+            if transaction_dict_key not in self.transaction_dict:
+                self.transaction_dict.setdefault(transaction_dict_key, [])
             self.transaction_dict[transaction_dict_key].append(transaction_dict_value)
 
     def generate_block_dictionary(self):
         """生产字典格式的区块数据"""
-        self.retrieve_all_height()
         for i in range(0, len(self.__block_log_list)):
             # 设置区块字典的key为区块高度
             block_dict_key = self.__block_log_list[i][1]
             block_dict_value = [self.__block_log_list[i][0], self.__block_log_list[i][2]]
+            if block_dict_key not in self.block_dict:
+                self.block_dict.setdefault(block_dict_key, [])
             self.block_dict[block_dict_key].append(block_dict_value)
     
     @staticmethod
