@@ -69,14 +69,17 @@ class LogProcessing(object):
     def retrieve_all_txhash(self):
         """获取日志中所有交易id"""
         # 取transaction_log_list中的第二列即交易id 包含重复元素
-        self.tx_hash = list(zip(*self.__transaction_log_list))[1]
+        self.tx_hash = [i[1] for i in self.__transaction_log_list] 
+        # self.tx_hash = list(zip(*self.__transaction_log_list))[1]
+        # print(self.tx_hash)
         # 从all_tx_hash元组中创建字典 key为交易id 同时去处重复元素
         self.transaction_dict = dict().fromkeys(self.tx_hash, [])
         self.tx_hash = list(self.transaction_dict.keys())
 
     def retrieve_all_height(self):
         """获取所有区块高度"""
-        self.block_height = list(zip(*self.__block_log_list))[1]
+        self.block_height =  [i[1] for i in self.__block_log_list] 
+        # self.block_height = list(zip(*self.__block_log_list))[1]
         self.block_dict = dict().fromkeys(self.block_height, [])
         self.block_height = list(self.block_dict.keys())
 
