@@ -38,33 +38,31 @@ class LogProcessing(object):
     def __execution_clean_log(self):
         """执行日志清洗 将日志中的有用数据存为列表"""
         try:
-            with open(self.__log_path, 'r') as f:
-                # 将日志文件以行为单位拆分并放入列表
-                log_list = f.readlines()
+            with open(self.__log_path, 'r') as file:
+                for line in file:
+                    # 使用正则表达式匹配双引号中的内容并存为列表
+                    # 格式为:['Mar 17 00:00:00.486', 'receive message from peer', '{height: 197197}', '115.54.192.9:52618', '*netsync.GetBlockMessage']
+                    divided_log = re.findall(r'\"([^\"]*)\"', line)
+                    # 日志类型
+                    log_type = divided_log[-1]
+                    if log_type == '*netsync.TransactionMessage':
+                        # 截取交易message中的交易id
+                        divided_log[2] = divided_log[2][-65:-1]
+                        # 删除列表中的type属性
+                        del(divided_log[-1])
+                        # 删除列表中的msg属性
+                        del(divided_log[1])
+                        self.__transaction_log_list.append(divided_log)
+                    elif log_type == '*netsync.MineBlockMessage':
+                        # 截取区块message中的区块高度
+                        divided_log[2] = int(divided_log[2][15:-79])
+                        del(divided_log[-1])
+                        del(divided_log[1])
+                        self.__block_log_list.append(divided_log)
         except IOError as err:
             logging.error('%s', str(err))
             print('Log file "%s" is not accessible!' %self.__log_path)
             sys.exit(-1)
-        for i in range(0, len(log_list)):
-            # 使用正则表达式匹配双引号中的内容并存为列表
-            # 格式为:['Mar 17 00:00:00.486', 'receive message from peer', '{height: 197197}', '115.54.192.9:52618', '*netsync.GetBlockMessage']
-            divided_log = re.findall(r'\"([^\"]*)\"', log_list[i])
-            # 日志类型
-            log_type = divided_log[-1]
-            if log_type == '*netsync.TransactionMessage':
-                # 截取交易message中的交易id
-                divided_log[2] = divided_log[2][-65:-1]
-                # 删除列表中的type属性
-                del(divided_log[-1])
-                # 删除列表中的msg属性
-                del(divided_log[1])
-                self.__transaction_log_list.append(divided_log)
-            elif log_type == '*netsync.MineBlockMessage':
-                # 截取区块message中的区块高度
-                divided_log[2] = int(divided_log[2][15:-79])
-                del(divided_log[-1])
-                del(divided_log[1])
-                self.__block_log_list.append(divided_log)
 
     def retrieve_all_txhash(self):
         """获取日志中所有交易id"""
