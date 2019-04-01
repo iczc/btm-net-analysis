@@ -3,57 +3,44 @@
 
 import threading
 
-from queue import Queue
-
 from log import LogProcessing
 
 
-class Analysis(threading.Thread):
-    def __init__(self, log_file, parameter, type):
-        super(Analysis, self).__init__()
+class AnalysisThread(threading.Thread):
+    def __init__(self, queue, log_file, parameter, type):
+        super().__init__()
+        self.__queue = queue
+        # self.__log_dict = log_dict
+        self.__log_dict = dict()
         self.__log_file = log_file
         self.__parameter = parameter
         self.__type = type
-        self.earliest_msg = ''
-        self.latest_msg = ''
+        self.earliest_msg = []
+        self.latest_msg = []
     
     def run(self):
-        self.__log_info = LogProcessing(self.__log_file)
-        if self.__type == 'transaction':
-            self.__analyze_single_transaction()
-        elif self.__type == 'block':
-            self.__analyze_single_transaction()
+        if not self.__log_dict:
+            self.__get_log_dictionary()
+        self.__get_both_ends_msg()
         # 判断所有的最早的消息列表和最晚的消息列表不为空
         if self.earliest_msg and self.latest_msg:
-            print('The earliest msg and latest msg in %s:' %self.__log_file)
-            print(self.earliest_msg)
-            print(self.latest_msg)
-        
-    def __analyze_single_transaction(self):
-        tx_hash = self.__parameter
-        self.__log_info.generate_transaction_dictionary()
-        # 判断transaction字典中是否有交易id的key
-        if tx_hash in self.__log_info.transaction_dict:
-            transaction_info_list = self.__log_info.transaction_dict[tx_hash]
-            # 日志文件时间即为有序无需排序 根据转为为毫秒时间戳的时间为key排序
-            # transaction_info_list.sort(key=lambda msg: LogProcessing.logtime_to_millisecondtimestamp(msg[0]))
-            self.earliest_msg = transaction_info_list[0]
-            self.latest_msg = transaction_info_list[-1]
-        else:
-            print('The transaction %s was not found in %s' %(tx_hash, self.__log_file))
-        
-    def __analyze_single_block(self):
-        height = self.__parameter
-        self.__log_info.generate_block_dictionary()
-        # block字典中是否有区块高度的key
-        if height in self.__log_info.block_dict:
-            blcok_info_list = self.__log_info.block_dict[height]
-            # 根据转为为毫秒时间戳的时间为key排序
-            # blcok_info_list.sort(key=lambda msg: LogProcessing.logtime_to_millisecondtimestamp(msg[0]))
-            self.earliest_msg = blcok_info_list[0]
-            self.latest_msg = blcok_info_list[-1]
-        else:
-            print('The height %s was not found in %s' %(height, self.__log_file))
-    
-    def find_earliest_latest_msg(self, compared_list):
-        pass
+            self.__queue.put(self.earliest_msg)
+            self.__queue.put(self.latest_msg)
+
+    def __get_log_dictionary(self):
+        """调用日志处理类生成字典格式的交易区块日志数据"""
+        self.__log_info = LogProcessing(self.__log_file)
+        if self.__type == 'transaction':
+            self.__log_info.generate_transaction_dictionary()
+            self.__log_dict = self.__log_info.transaction_dict
+        elif self.__type == 'block':
+            self.__log_info.generate_block_dictionary()
+            self.__log_dict = self.__log_info.block_dict
+
+    def __get_both_ends_msg(self):
+        """获取区块或交易在日志中最早和最迟的数据"""
+        # 判断数据字典中是否有交易id或区块高度的key
+        if self.__parameter in self.__log_dict:
+            data_list = self.__log_dict[self.__parameter]
+            self.earliest_msg = data_list[0]
+            self.latest_msg = data_list[-1]
