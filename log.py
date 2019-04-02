@@ -39,6 +39,10 @@ class LogProcessing(object):
                     # 使用正则表达式匹配双引号中的内容并存为列表
                     # 格式为:['Mar 17 00:00:00.486', 'receive message from peer', '{height: 197197}', '115.54.192.9:52618', '*netsync.GetBlockMessage']
                     divided_log = re.findall(r'\"([^\"]*)\"', line)
+                    # 判断日志文件是否正确
+                    if len(divided_log) != 5:
+                        print('Log file format error!')
+                        sys.exit(-1)
                     # 日志类型
                     log_type = divided_log[-1]
                     if log_type == '*netsync.TransactionMessage':
