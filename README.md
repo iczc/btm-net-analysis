@@ -5,11 +5,7 @@
 ## Requirements
 
 * Python3  
-* Packages:
 
-To install packages using:
-```bash
-$ pip install -r requirements.txt
 ```
 ## Usage
 
@@ -28,9 +24,9 @@ Options:
 | :------------- | :------------- |:-------------|
 | -h | --help | 查看使用帮助 |
 | -f \<relative path> / \<absolute path> | --folder \<relative path> / \<absolute path> | 指定日志目录（相对路径或绝对路径） |
-| -t \<tx_hash\> | --transaction \<tx_hash\> | 指定交易id以查看此交易最早收到的节点的时间，最晚收到的节点的时间，交易从出现到完全广播化费的时间 |
+| -t \<tx_hash\> | --transaction \<tx_hash\> | 指定交易id以查看此交易最早收到的节点的时间，最晚收到的节点的时间，交易从出现到完全广播花费的时间 |
 | -t all | --transaction all | 查看所有交易完全广播的最短时间，最长时间，平均值，中位数 |
-| -b \<block_height\> | --block \<block_height\> | 指定区块高度以查看此区块最早收到的节点的时间，最晚收到的节点的时间，交易从出现到完全广播花费的时间 |
+| -b \<block_height\> | --block \<block_height\> | 指定区块高度以查看此区块最早收到的节点的时间，最晚收到的节点的时间，区块从出现到完全广播花费的时间 |
 | -b all | --block all | 查看所有区块完全广播的最短时间，最长时间，平均值，中位数 |
 
 
