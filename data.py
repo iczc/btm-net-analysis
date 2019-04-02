@@ -7,7 +7,7 @@ from log import LogProcessing
 
 
 class DataThread(Thread):
-    def __init__(self,log_file, log_dict_list, type):
+    def __init__(self, log_file, log_dict_list, type):
         super().__init__()
         self.__log_file = log_file
         # 列表当作参数传递给线程会当作全局变量
