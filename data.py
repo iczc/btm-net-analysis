@@ -18,13 +18,13 @@ class DataThread(Thread):
 
     def run(self):
         if self.__type == 'transaction':
-            self.__create_transactio_dict()
+            self.__create_transaction_dict()
         elif self.__type == 'block':
             self.__create__block_dict()
         # append为线程安全方法无需互斥锁
         self.log_dict_list.append(self.__log_dict)
 
-    def __create_transactio_dict(self):
+    def __create_transaction_dict(self):
         self.__log.generate_transaction_dictionary()
         self.__log_dict = self.__log.transaction_dict
     
