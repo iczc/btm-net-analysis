@@ -6,6 +6,7 @@ from array import array
 from data import DataThread
 from log import LogProcessing
 from util import calc_millisecond_interval
+from util import millisecond2time_format
 
 
 def get_all_log_dict(log_file_list, analysis_type):
@@ -75,5 +76,6 @@ def calc_broadcasting_time(work_list, broadcasting_time_queue, all_log_dict):
         overall_earliest_msg, overall_latest_msg = retrieve_earliest_latest_msg(all_log_dict, dict_key)
         millisecond_interval = calc_millisecond_interval(overall_latest_msg[0], overall_earliest_msg[0])
         broadcasting_time_array.append(millisecond_interval)
+        print('%s : %s' % (dict_key, millisecond2time_format(millisecond_interval)))
     # 将该子进程中的分析结果通过queue发送给父进程
     broadcasting_time_queue.put(broadcasting_time_array)
