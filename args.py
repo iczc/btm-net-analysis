@@ -1,9 +1,9 @@
+# !/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """负责处理用户命令行输入的参数
 
 根据用户输入的参数以确定程序的工作模式、日志路径和要分析的数据。
 """
-# !/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import getopt
 import logging

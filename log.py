@@ -1,11 +1,12 @@
+# !/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 """对单个日志文件进行过滤和清洗并生成为字典的格式
 
 循环读取日志文件的每一行选取有用的数据添加到列表
 并最终生成以交易id或区块高度为key的字典以便在数
 据分析过程中能在O(1)时间中访问到需要的数据。
 """
-# !/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import logging
 import re

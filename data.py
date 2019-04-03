@@ -1,3 +1,5 @@
+# !/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """用于获取日志文件中字典格式的数据的线程实现类
 
 在主线程中开启与日志文件数量相同的子线程用于生成字
@@ -5,8 +7,6 @@
 日志处理进程产生IO等待时调度到另一个日志处理进程执
 行用CPU时间的数据字典生成方法，节约数据的获取时间。
 """
-# !/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 from threading import Thread
 
