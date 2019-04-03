@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import os
+import signal
 import sys
 import time
 
@@ -19,10 +21,21 @@ from util import split_list
 assert sys.version_info >= (3, 6, 0), 'btm-net-analysis requires Python 3.6+'  # 检查Python版本
 
 
+def signal_handler(signal, frame):
+    global parent_pid
+    # 如果当前处理信号的进程为主进程则打印信号处理的消息
+    if os.getpid() == parent_pid:
+        print('\nctrl-c pressed')
+    os._exit(0)
+
+
 def main():
+    global parent_pid
+    parent_pid = os.getpid()
     args_info = ArgsProcessing(sys.argv[1:])  # 处理命令行参数
     work_mode = args_info.current_mode  # 工作模式
     log_file_list = args_info.log_file_list  # 所有的日志文件
+    signal.signal(signal.SIGINT, signal_handler)  # SIGINT是ctrl+c发出的信号，值为2
     start_time = time.time()
     # 模式1:分析单笔交易 模式2:分析所有交易 模式3:分析单个区块 模式4:分析所有区块
     if work_mode == 1:
