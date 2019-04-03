@@ -1,4 +1,8 @@
-#!/usr/bin/env python3
+"""负责处理用户命令行输入的参数
+
+根据用户输入的参数以确定程序的工作模式、日志路径和要分析的数据。
+"""
+# !/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import getopt
@@ -9,7 +13,7 @@ import sys
 
 class ArgsProcessing(object):
     """
-    处理命令行参数
+    命令行参数处理类
 
     根据用户输入的命令行参数设置类属性中的工作模式、日志文件
     列表、区块高度或交易Hash并捕获用户输入的命令行参数的的错误
@@ -20,15 +24,16 @@ class ArgsProcessing(object):
         height: 用户通过命令行参数传入的区块高度.
         tx_hash: 用户通过命令行参数传入的交易Hash.
     """
+
     def __init__(self, argv):
         """初始化命令行参数、类属性并解析命令行参数"""
-        self.__argv = argv # 设置命令行设置
-        self.current_mode = 0 # 模式1:分析单笔交易 模式2:分析所有交易 模式3:分析单个区块 模式4:分析所有区块
-        self.log_file_list = [] # 日志文件列表
-        self.height = None # 区块高度
-        self.tx_hash = None # 交易Hash
+        self.__argv = argv  # 设置命令行设置
+        self.current_mode = 0  # 模式1:分析单笔交易 模式2:分析所有交易 模式3:分析单个区块 模式4:分析所有区块
+        self.log_file_list = []  # 日志文件列表
+        self.height = None  # 区块高度
+        self.tx_hash = None  # 交易Hash
         self.__parse_args()  # 解析参数
-    
+
     def __parse_args(self):
         """解析命令行参数并设置工作模式、日志文件列表、交易Hash或区块高度"""
         # 如果不存在命令行参数打印帮助后退出
@@ -60,7 +65,7 @@ class ArgsProcessing(object):
                         # 将路径与文件名连接
                         self.log_file_list[idx] = os.path.join(log_folder_path, item)
                 else:
-                    print('Folder "%s" not found!' %log_folder_path)
+                    print('Folder "%s" not found!' % log_folder_path)
                     self.__exit(-1)
             elif opt in ('-t', '--transaction'):
                 if arg == 'all':
@@ -95,18 +100,18 @@ class ArgsProcessing(object):
     def __exit(exit_code):
         """打印使用帮助并使用传入的错误码退出程序"""
         print("\nUsage: main.py "
-            "[-h/--help] "
-            "[-f/--folder <relative path>/<absolute path>] "
-            "[-t/--transaction <tx_hash>/all] "
-            "[-b/--block <block_height>/all] ")
+              "[-h/--help] "
+              "[-f/--folder <relative path>/<absolute path>] "
+              "[-t/--transaction <tx_hash>/all] "
+              "[-b/--block <block_height>/all] ")
         sys.exit(exit_code)
 
     def __print_args(self):
         """打印参数信息"""
-        print('log file list: %s' %self.log_file_list)
+        print('log file list: %s' % self.log_file_list)
         mode_info = ['', 'Analyze a transaction', 'Analyze all transactions', 'Analyze a block', 'Analyze all blocks']
-        print('current mode: %s' %(mode_info[self.current_mode]))
+        print('current mode: %s' % (mode_info[self.current_mode]))
         if self.current_mode == 1:
-            print('transaction id: %s\n' %self.tx_hash)
+            print('transaction id: %s\n' % self.tx_hash)
         elif self.current_mode == 3:
-            print('block height: %s\n' %self.height)
+            print('block height: %s\n' % self.height)
