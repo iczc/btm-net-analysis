@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from array import array
+
 from data import DataThread
 from log import LogProcessing
-
 from util import calc_millisecond_interval
 
 
@@ -39,11 +40,11 @@ def retrieve_earliest_latest_msg(all_log_dict, dict_key):
                 overall_latest_msg = latest_msg
     return overall_earliest_msg, overall_latest_msg
 
-def calc_broadcasting_time(work_queue, broadcasting_time_queue, all_log_dict):
-    while True:
-        dict_key = work_queue.get()
+def calc_broadcasting_time(work_list, broadcasting_time_queue, all_log_dict):
+    # unsigned long array
+    broadcasting_time_array = array('L')
+    for dict_key in work_list:
         overall_earliest_msg, overall_latest_msg = retrieve_earliest_latest_msg(all_log_dict, dict_key)
         millisecond_interval = calc_millisecond_interval(overall_latest_msg[0], overall_earliest_msg[0])
-        broadcasting_time_queue.put(millisecond_interval)
-        if work_queue.empty():
-            break
+        broadcasting_time_array.append(millisecond_interval)
+    broadcasting_time_queue.put(broadcasting_time_array)

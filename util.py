@@ -7,10 +7,11 @@ from log import LogProcessing
 
 
 def calc_millisecond_interval(earliest_time, latest_time):
-    latest_time = LogProcessing.logtime_to_millisecondtimestamp(latest_time)
-    earliest_time = LogProcessing.logtime_to_millisecondtimestamp(earliest_time)
-    millisecond_interval = abs(latest_time - earliest_time)
-    return millisecond_interval
+    if earliest_time and latest_time:
+        latest_time = LogProcessing.logtime_to_millisecondtimestamp(latest_time)
+        earliest_time = LogProcessing.logtime_to_millisecondtimestamp(earliest_time)
+        millisecond_interval = abs(latest_time - earliest_time)
+        return millisecond_interval
 
 def millisecond2time_format(millisecond):
     second_interval = int(millisecond / 1000)
@@ -28,3 +29,12 @@ def get_average_median(list):
     # 列表长度为偶数时 正负索引分别指向中间的两个元素
     median = (list[half] + list[~half]) / 2
     return int(average), int(median)
+
+def split_list(lst, num):
+    avg = len(lst) / float(num)
+    out = []
+    last = 0.0
+    while last < len(lst):
+        out.append(lst[int(last):int(last + avg)])
+        last += avg
+    return out

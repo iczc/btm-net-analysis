@@ -14,6 +14,7 @@ from analyze import calc_broadcasting_time
 from util import calc_millisecond_interval
 from util import millisecond2time_format
 from util import get_average_median
+from util import split_list
 
 assert sys.version_info >= (3, 6, 0), 'btm-net-analysis requires Python 3.6+'  # 检查Python版本
 
@@ -42,21 +43,19 @@ def main():
             all_tx_hash.extend(list(tx_dict.keys()))
         # 去除重复元素
         all_tx_hash = list(set(all_tx_hash))
-        tx_hash_queue = Queue()
         broadcasting_time_queue = Queue()
-        for tx_hash in all_tx_hash:
-            tx_hash_queue.put(tx_hash)
         processes = []
         processor_num = cpu_count()
-        for i in range(processor_num):
-            p = Process(target=calc_broadcasting_time, args=(tx_hash_queue, broadcasting_time_queue, all_tx_dict_list))
+        split_all_tx_hash = split_list(all_tx_hash, processor_num)
+        for work_list in split_all_tx_hash:
+            p = Process(target=calc_broadcasting_time, args=(work_list, broadcasting_time_queue, all_tx_dict_list))
             p.start()
             processes.append(p)
         for process in processes:
             process.join()
         broadcasting_time_list = []
         while True:
-            broadcasting_time_list.append(broadcasting_time_queue.get())
+            broadcasting_time_list.extend(broadcasting_time_queue.get())
             if broadcasting_time_queue.empty():
                 break
         broadcasting_time_list.sort()
@@ -82,21 +81,19 @@ def main():
         for block_dict in all_block_dict_list:
             all_block_height.extend(list(block_dict.keys()))
         all_block_height = list(set(all_block_height))
-        block_queue = Queue()
         broadcasting_time_queue = Queue()
-        for height in all_block_height:
-            block_queue.put(height)
         processes = []
         processor_num = cpu_count()
-        for i in range(processor_num):
-            p = Process(target=calc_broadcasting_time, args=(block_queue, broadcasting_time_queue, all_block_dict_list))
+        split_all_block_height = split_list(all_block_height, processor_num)
+        for work_list in split_all_block_height:
+            p = Process(target=calc_broadcasting_time, args=(work_list, broadcasting_time_queue, all_block_dict_list))
             p.start()
             processes.append(p)
         for process in processes:
             process.join()
         broadcasting_time_list = []
         while True:
-            broadcasting_time_list.append(broadcasting_time_queue.get())
+            broadcasting_time_list.extend(broadcasting_time_queue.get())
             if broadcasting_time_queue.empty():
                 break
         broadcasting_time_list.sort()
@@ -105,7 +102,7 @@ def main():
         print('最长时间: %s' %millisecond2time_format(broadcasting_time_list[-1]))
         print('平均值:   %s' %millisecond2time_format(average))
         print('中位数:   %s' %millisecond2time_format(median))
-        
+
     print('分析用时:', time.time()-start_time)
 
 if __name__ == '__main__':
