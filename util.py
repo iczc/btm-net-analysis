@@ -52,13 +52,13 @@ def get_average_median(lst):
     lst_size = len(lst)
     # 将列表的值累加
     lst_sum = sum(lst)
-    average = lst_sum / lst_size
+    average = lst_sum // lst_size
     half = lst_size // 2
     # half取反为负数 负数使用补码表示 补码求原码:取反+1 half取反过程为~half = -(half+1)
     # 列表长度为奇数时 正负索引同指向中间的元素
     # 列表长度为偶数时 正负索引分别指向中间的两个元素
-    median = (lst[half] + lst[~half]) / 2
-    return int(average), int(median)
+    median = (lst[half] + lst[~half]) // 2
+    return average, median
 
 
 def split_list(lst, num):
