@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import heapq
 import os
 import signal
 import sys
@@ -75,11 +76,11 @@ def main():
         broadcasting_time_list = []
         while True:
             # 将子进程的分析结果存储到父进程中的列表
-            broadcasting_time_list.extend(broadcasting_time_queue.get())
+            broadcasting_time_list.append(broadcasting_time_queue.get())
             if broadcasting_time_queue.empty():
                 break
-        # 对广播时间列表升序排序
-        broadcasting_time_list.sort()
+        # 使用最小堆对所有子进程生成的有序列表合并
+        broadcasting_time_list = list(heapq.merge(*broadcasting_time_list))
         # 计算广播时间列表平均值和中位数
         average, median = get_average_median(broadcasting_time_list)
         print('最短时间: %s' % millisecond2time_format(broadcasting_time_list[0]))
@@ -116,10 +117,10 @@ def main():
             process.join()
         broadcasting_time_list = []
         while True:
-            broadcasting_time_list.extend(broadcasting_time_queue.get())
+            broadcasting_time_list.append(broadcasting_time_queue.get())
             if broadcasting_time_queue.empty():
                 break
-        broadcasting_time_list.sort()
+        broadcasting_time_list = list(heapq.merge(*broadcasting_time_list))
         average, median = get_average_median(broadcasting_time_list)
         print('最短时间: %s' % millisecond2time_format(broadcasting_time_list[0]))
         print('最长时间: %s' % millisecond2time_format(broadcasting_time_list[-1]))

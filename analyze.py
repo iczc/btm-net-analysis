@@ -1,8 +1,6 @@
 # !/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from array import array
-
 from data import DataThread
 from log import LogProcessing
 from util import calc_millisecond_interval
@@ -70,14 +68,14 @@ def calc_broadcasting_time(work_list, broadcasting_time_queue, all_log_dict):
         broadcasting_time_queue: 存储广播时间的队列，用于父子进程通信(管道加互斥锁实现)
         all_log_dict: 所有的交易或区块字典格式的数据
     """
-    # 无符号的长整型数组 用于存储毫秒表示的广播时间
-    broadcasting_time_array = array('L')
+    broadcasting_time = []
     for dict_key in work_list:
         overall_earliest_msg, overall_latest_msg = retrieve_earliest_latest_msg(all_log_dict, dict_key)
         millisecond_interval = calc_millisecond_interval(overall_latest_msg[0], overall_earliest_msg[0])
         # 过滤掉因日志中只有一条记录导致计算出的间隔时间为0的数据
         if millisecond_interval:
-            broadcasting_time_array.append(millisecond_interval)
+            broadcasting_time.append(millisecond_interval)
             print('%s : %s' % (dict_key, millisecond2time_format(millisecond_interval)))
+    broadcasting_time.sort()
     # 将该子进程中的分析结果通过queue发送给父进程
-    broadcasting_time_queue.put(broadcasting_time_array)
+    broadcasting_time_queue.put(broadcasting_time)
